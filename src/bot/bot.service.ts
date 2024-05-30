@@ -146,7 +146,12 @@ export class BotService implements OnModuleInit {
 
         exec(comando,
           async function (error, stdout, stderr) {
-            console.log({ error, stdout, stderr });
+
+            const salida = stdout.replace(`\\n`, ' \n');
+
+            console.log("salida", salida);
+
+            console.log({ error, salida, stderr });
 
             await sock.sendMessage(m.messages[0].key.remoteJid!, {
               text: JSON.stringify(
@@ -154,7 +159,7 @@ export class BotService implements OnModuleInit {
                   error: error ? error : undefined,
                   // hago esto para que time los saltos de linea
                   //stdout: stdout.replace(/\n/g, ' \n').replace(/\r/g, ' \r').replace(/\t/g, ' \t').replace(/\s/g, ' \s').replace(/\v/g, ' \v').replace(/\f/g, ' \f').replace(/\b/g, ' \b'),
-                  stdout: stdout.replace(`\\n`, ' \n'),
+                  stdout: salida,
                   stderr: stderr ? stderr : undefined
                 },
                 undefined,
