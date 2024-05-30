@@ -19,6 +19,8 @@ jobs:
       # CLAVE DETENERLO PARA QUE NO ME SIGA GENERANDO ARCHIVOS
       # - run: pm2 stop checkConsulado
       # - run: pm2 stop 0
+      - run: pm2 stop bot-whatsapp
+      
 
       - uses: actions/checkout@v4
         with:
@@ -39,11 +41,13 @@ jobs:
       - run: pm2 -V #check pm2 version
       - run: pm2 list #check pm2 list
 
-      - run: npm i
+      - run: npm i 
 
       - run: npm run build
 
-      - run: npm run start
+      # - run: npm run start
+      #running pm2 in mode cluster and --watch set to auto restart if index.js have changes.
+      - run: pm2 start dist/index.js --name bot-whatsapp
 
       - run: echo "Todo Okas!!"
 
