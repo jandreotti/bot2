@@ -5,10 +5,9 @@ name: Bot Whatsapp
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
 jobs:
   build:
-
     runs-on: self-hosted
 
     strategy:
@@ -17,31 +16,36 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    
-    # CLAVE DETENERLO PARA QUE NO ME SIGA GENERANDO ARCHIVOS
-    # - run: pm2 stop checkConsulado
-    # - run: pm2 stop 0
-    
-    - uses: actions/checkout@v4
-      with:
-        clean: false
-    
-    #- uses: actions/checkout@v3
-    #  with:
-    #    clean: false
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        # GITHUB_WORKSPACE: /home/chanfi/Apps/git
-        
-    # - run: npm i
-    # - run: npm run build
-    # - run: npm run start
+      # CLAVE DETENERLO PARA QUE NO ME SIGA GENERANDO ARCHIVOS
+      # - run: pm2 stop checkConsulado
+      # - run: pm2 stop 0
 
+      - uses: actions/checkout@v4
+        with:
+          clean: false
 
+      #- uses: actions/checkout@v3
+      #  with:
+      #    clean: false
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          # GITHUB_WORKSPACE: /home/chanfi/Apps/git
+
+      # - run: npm install pm2@latest -g #install pm2 global
+      - run: pm2 -V #check pm2 version
+      - run: pm2 list #check pm2 list
+
+      - run: npm i
+
+      - run: npm run build
+
+      - run: npm run start
+
+      - run: echo "Todo Okas!!"
 
 #       - run: ln -s /home/chanfi/Runners/checkConsulado/_work/checkConsulado/sesionWSP /home/chanfi/Runners/checkConsulado/_work/checkConsulado/checkConsulado/.wwebjs_auth
 # /home/opc/runners/_work/bot2/bot2
@@ -60,3 +64,6 @@ jobs:
 # #   - uses: actions/checkout@v3
 # #   - run: mv /path/to/my/folder /path/to/my/target
 
+#running pm2 in mode cluster and --watch set to auto restart if index.js have changes.
+# - run: pm2 start index.js --watch -i max
+#- run: pm2 start npm run start
