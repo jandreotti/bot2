@@ -31,12 +31,12 @@ jobs:
       #  with:
       #    clean: false
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          # GITHUB_WORKSPACE: /home/chanfi/Apps/git
+      # - name: Use Node.js ${{ matrix.node-version }}
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: ${{ matrix.node-version }}
+      #     cache: 'npm'
+      #     # GITHUB_WORKSPACE: /home/chanfi/Apps/git
 
       # - run: npm install pm2@latest -g #install pm2 global
       - run: pm2 -V #check pm2 version

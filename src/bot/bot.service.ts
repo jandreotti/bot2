@@ -124,7 +124,7 @@ export class BotService implements OnModuleInit {
 
 
       // Si el mensaje lo otro, respondo
-      await sock.sendMessage(m.messages[0].key.remoteJid!, { text: 'Hola 1! Soy un bot, en que puedo ayudarte?' });
+      await sock.sendMessage(m.messages[0].key.remoteJid!, { text: 'Hola 2! Soy un bot, en que puedo ayudarte?' });
       // console.log("numero:", m.messages[0].key.remoteJid);
 
       // enviar mensaje al numero 5493515925801@s.whatsapp.net
