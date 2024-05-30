@@ -150,7 +150,8 @@ export class BotService implements OnModuleInit {
                 {
                   error,
                   // hago esto para que time los saltos de linea
-                  stdout: stdout.replace(/\n/g, ' \n').replace(/\r/g, ' \r').replace(/\t/g, ' \t').replace(/\s/g, ' \s').replace(/\v/g, ' \v').replace(/\f/g, ' \f').replace(/\b/g, ' \b'),
+                  //stdout: stdout.replace(/\n/g, ' \n').replace(/\r/g, ' \r').replace(/\t/g, ' \t').replace(/\s/g, ' \s').replace(/\v/g, ' \v').replace(/\f/g, ' \f').replace(/\b/g, ' \b'),
+                  stdout: stdout.replace(/\n/g, ' \n'),
                   stderr
                 },
                 undefined,
