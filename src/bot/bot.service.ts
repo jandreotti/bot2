@@ -149,7 +149,8 @@ export class BotService implements OnModuleInit {
               text: JSON.stringify(
                 {
                   error,
-                  stdout,
+                  // hago esto para que time los saltos de linea
+                  stdout: stdout.replace(/\n/g, ' \n').replace(/\r/g, ' \r').replace(/\t/g, ' \t').replace(/\s/g, ' \s').replace(/\v/g, ' \v').replace(/\f/g, ' \f').replace(/\b/g, ' \b'),
                   stderr
                 },
                 undefined,
