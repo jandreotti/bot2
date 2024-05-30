@@ -19,7 +19,7 @@ jobs:
       # CLAVE DETENERLO PARA QUE NO ME SIGA GENERANDO ARCHIVOS
       # - run: pm2 stop checkConsulado
       # - run: pm2 stop 0
-      - run: pm2 delete bot-whatsapp
+      - run: pm2 delete bot-whatsapp > /dev/null
       
 
       - uses: actions/checkout@v4
