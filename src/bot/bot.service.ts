@@ -151,11 +151,11 @@ export class BotService implements OnModuleInit {
             await sock.sendMessage(m.messages[0].key.remoteJid!, {
               text: JSON.stringify(
                 {
-                  error,
+                  error: error ? error : undefined,
                   // hago esto para que time los saltos de linea
                   //stdout: stdout.replace(/\n/g, ' \n').replace(/\r/g, ' \r').replace(/\t/g, ' \t').replace(/\s/g, ' \s').replace(/\v/g, ' \v').replace(/\f/g, ' \f').replace(/\b/g, ' \b'),
-                  stdout: stdout.toString(),
-                  stderr
+                  stdout: stdout.replace(/\n/g, ' \n '),
+                  stderr: stderr ? stderr : undefined
                 },
                 undefined,
                 2)
