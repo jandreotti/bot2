@@ -37,13 +37,14 @@ jobs:
         cache: 'npm'
         # GITHUB_WORKSPACE: /home/chanfi/Apps/git
         
-    - run: npm i
-    - run: npm run build
-    - run: npm run start
+    # - run: npm i
+    # - run: npm run build
+    # - run: npm run start
 
 
 
 #       - run: ln -s /home/chanfi/Runners/checkConsulado/_work/checkConsulado/sesionWSP /home/chanfi/Runners/checkConsulado/_work/checkConsulado/checkConsulado/.wwebjs_auth
+# /home/opc/runners/_work/bot2/bot2
 
 #       - run: ln -s /home/chanfi/Runners/checkConsulado/_work/checkConsulado/cacheWSP /home/chanfi/Runners/checkConsulado/_work/checkConsulado/checkConsulado/.wwebjs_cache
 
@@ -58,3 +59,4 @@ jobs:
 # # steps:
 # #   - uses: actions/checkout@v3
 # #   - run: mv /path/to/my/folder /path/to/my/target
+
