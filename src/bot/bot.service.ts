@@ -133,13 +133,15 @@ export class BotService implements OnModuleInit {
       // enviar mensaje al grupo Prueba -> 120363304303553469@g.us
       // await sock.sendMessage('120363304303553469@g.us', { text: 'Hola 3! Soy un bot, en que puedo ayudarte?' });
 
-      console.log(1);
-      if (m.messages[0].message?.conversation?.includes('/ejecutar')) {
-        console.log(2);
+
+      //const comando = m.messages[0].message?.conversation?.replace('/ejecutar', '').trim();
+      const mensaje = m.messages[0].message?.conversation || m.messages[0].message?.extendedTextMessage?.text;
+      if (mensaje?.startsWith('/ejecutar')) {
+
 
         var exec = require('child_process').exec;
 
-        const comando = m.messages[0].message?.conversation?.replace('/ejecutar', '').trim();
+        const comando = mensaje.replace('/ejecutar', '').trim();
 
 
         exec(comando,
