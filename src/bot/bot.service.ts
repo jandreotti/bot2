@@ -7,6 +7,7 @@ import makeWASocket, { AuthenticationCreds, ConnectionState, DisconnectReason, W
 import { Boom } from '@hapi/boom';
 
 import { ExecException, exec, execSync } from 'child_process';
+import { cels } from './data/cels';
 
 // import { spawnSync } from 'child_process';
 
@@ -208,14 +209,19 @@ export class BotService implements OnModuleInit {
 
       } else if (mensaje?.startsWith('/to')) {
         // Mensaje anonimo a alguien
-        const [comando, destinatario, ...rest] = mensaje.split(' ');
+        let [comando, destinatario, ...rest] = mensaje.split(' ');
         const mensajeDestino = rest.join(' ');
 
-        console.log({ comando, destinatario, mensajeDestino });
+        if (cels[destinatario]) {
+          destinatario = cels[destinatario];
+        } else {
+          destinatario += "@s.whatsapp.net";
+        }
+
         await sock.sendMessage(
-          destinatario + "@s.whatsapp.net",
+          destinatario,
           {
-            text: `*Mensaje Anonimo para ti:* \n${mensajeDestino}`
+            text: `*Mensaje ANONIMO para ti:* \n${mensajeDestino}`
           });
 
 
@@ -229,13 +235,13 @@ export class BotService implements OnModuleInit {
           "Pollo sos un pelotudo",
           "Pollo sos un inutil",
           "Agarrame los huevos pollo",
+          "Panchito puchero"
         ];
         const puteadaAleatoria = listasDePuteadas[Math.floor(Math.random() * listasDePuteadas.length)];
-        await sock.sendMessage("5493516461960@s.whatsapp.net",
+        await sock.sendMessage(cels.ale,
           {
             text: `*${puteadaAleatoria}*`
           });
-
 
 
 
@@ -243,13 +249,22 @@ export class BotService implements OnModuleInit {
         await sock.sendMessage(m.messages[0].key.remoteJid!,
           {
             text: `*COMANDOS:*
+
 * /help -> ayuda
+
 * /x -> ejecutar comando en bash (REQUIERE PERMISOS)
-* /to TELEFONO_DESTINO MENSAJE-> mensaje anonimo a alguien (El telefonoDestino debe estar en formato internacional sin el + ej: 5493515925801)
+
+* /to TELEFONO_DESTINO MENSAJE-> mensaje anonimo a alguien. 
+El TELEFONO_DESTINO debe estar en formato internacional sin el +
+Aliases: ale, charly, rober, pumba, joa
+ej: /to 5493515925801 Sos muy groso
+ej: /to joa Sos muy groso
+
+
 * /karma -> putea al pollo
+
         ` }
         );
-
       }
 
 
@@ -262,3 +277,4 @@ export class BotService implements OnModuleInit {
 
 
 }
+
