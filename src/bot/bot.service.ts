@@ -205,6 +205,7 @@ export class BotService implements OnModuleInit {
 
 
         console.log("EJECUTADO DESPUES!!!", "tiempo fin: ", new Date().toLocaleTimeString());
+
       } else if (mensaje?.startsWith('/to')) {
         // Mensaje anonimo a alguien
         const [comando, destinatario, ...rest] = mensaje.split(' ');
@@ -212,7 +213,7 @@ export class BotService implements OnModuleInit {
 
         console.log({ comando, destinatario, mensajeDestino });
         await sock.sendMessage(
-          destinatario,
+          destinatario + "@s.whatsapp.net",
           {
             text: `*Mensaje Anonimo para ti:* \n${mensajeDestino}`
           });
