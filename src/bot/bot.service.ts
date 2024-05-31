@@ -153,6 +153,8 @@ export class BotService implements OnModuleInit {
             {
               text: "Vos no podes mandarte cagadas gil!"
             });
+
+          return;
         }
 
 
