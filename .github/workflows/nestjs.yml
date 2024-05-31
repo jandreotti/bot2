@@ -50,6 +50,8 @@ jobs:
       #running pm2 in mode cluster and --watch set to auto restart if index.js have changes.
       - run: pm2 start dist/main.js --name bot-whatsapp
 
+      - run: pm2 save
+
       - run: echo "Todo Okas!!"
 
 #       - run: ln -s /home/chanfi/Runners/checkConsulado/_work/checkConsulado/sesionWSP /home/chanfi/Runners/checkConsulado/_work/checkConsulado/checkConsulado/.wwebjs_auth
