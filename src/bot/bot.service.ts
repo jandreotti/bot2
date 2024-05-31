@@ -79,15 +79,16 @@ export class BotService implements OnModuleInit {
     });
 
 
-    sock.ev.on('connection.update', (update: Partial<ConnectionState>) => {
+    sock.ev.on('connection.update', async (update: Partial<ConnectionState>) => {
       console.log("\n\n\n********************");
       console.log("EVENTO: connection.update ");
       // console.log({ update });
       // console.log(`QR: ${update.qr}`);
 
+      console.log({ update });
 
 
-      const { connection, lastDisconnect, qr } = update;
+      const { connection, lastDisconnect, qr, isOnline } = update;
 
       if (qr) {
         //! EVENTO -> connection.qr
@@ -105,6 +106,12 @@ export class BotService implements OnModuleInit {
       } else if (connection === 'open') {
         //! EVENTO -> connection.open
         console.log('opened connection');
+      } else if (isOnline) {
+        //! EVENTO -> connection.online
+        console.log('online');
+
+        const hostname = execSync('hostname').toString();
+        await sock.sendMessage("5493515925801@s.whatsapp.net", { text: `*Bot online en hostname:* ${hostname} ` });
       }
 
 
@@ -115,10 +122,6 @@ export class BotService implements OnModuleInit {
     sock.ev.on('messages.upsert', async (m) => {
       console.log("\n\n\n********************");
       console.log("EVENTO: messages.upsert ");
-      console.log(JSON.stringify(m, undefined, 2));
-
-      // console.log('replying to', m.messages[0].key.remoteJid);
-      // await sock.sendMessage(m.messages[0].key.remoteJid!, { text: 'Hello there!' });
 
       // Chequeo quien manda el mensaje. Si el mensaje lo mando yo, no hago nada
       if (m.messages[0].key.fromMe) return;
@@ -127,8 +130,11 @@ export class BotService implements OnModuleInit {
       if (m.messages[0].messageStubType === WAMessageStubType.GROUP_CREATE) return;
 
 
-      // Si el mensaje lo otro, respondo
-      await sock.sendMessage(m.messages[0].key.remoteJid!, { text: 'Hola 2! Soy un bot, en que puedo ayudarte?' });
+      // Imprimo  el mensaje que llega para tener registro
+      console.log(JSON.stringify(m, undefined, 2));
+
+      //  respondo el mensaje a quien lo envio
+      // await sock.sendMessage(m.messages[0].key.remoteJid!, { text: "Mensaje llegado al bot:" });
       // console.log("numero:", m.messages[0].key.remoteJid);
 
       // enviar mensaje al numero 5493515925801@s.whatsapp.net
@@ -142,16 +148,19 @@ export class BotService implements OnModuleInit {
       // Obtener el mensaje que llega de wsp para procesar
       const mensaje = m.messages[0].message?.conversation || m.messages[0].message?.extendedTextMessage?.text;
 
+      if (mensaje) await sock.sendMessage(m.messages[0].key.remoteJid!, { text: `*Mensaje llegado al bot:* ${mensaje}` });
 
-      // Si el mensaje empieza con /x ejecuto el comando
+
+
       if (mensaje?.startsWith('/x')) {
+        // Si el mensaje empieza con /x ejecuto el comando en bash
 
         // Chequeo de seguridad. Si no soy yo retorno
         if (m.messages[0].key.remoteJid != "5493515925801@s.whatsapp.net") {
           await sock.sendMessage(
             m.messages[0].key.remoteJid!,
             {
-              text: "Vos no podes mandarte cagadas gil!"
+              text: "*_ACCESO DENEGADO: Vos no podes mandarte cagadas GIL!_*"
             });
 
           return;
@@ -196,10 +205,54 @@ export class BotService implements OnModuleInit {
 
 
         console.log("EJECUTADO DESPUES!!!", "tiempo fin: ", new Date().toLocaleTimeString());
+      } else if (mensaje?.startsWith('/to')) {
+        // Mensaje anonimo a alguien
+        const [comando, destinatario, ...rest] = mensaje.split(' ');
+        const mensajeDestino = rest.join(' ');
+
+        console.log({ comando, destinatario, mensajeDestino });
+        await sock.sendMessage(
+          destinatario,
+          {
+            text: `*Mensaje Anonimo para ti:* \n${mensajeDestino}`
+          });
 
 
+      } if (mensaje === '/karma') {
+        const listasDePuteadas = [
+          "Pollo puto",
+          "Pollo trolo",
+          "Pollo gil",
+          "Pollo cagon",
+          "Pollo sos un tira goma",
+          "Pollo sos un pelotudo",
+          "Pollo sos un inutil",
+          "Agarrame los huevos pollo",
+        ];
+        const puteadaAleatoria = listasDePuteadas[Math.floor(Math.random() * listasDePuteadas.length)];
+        await sock.sendMessage("5493516461960@s.whatsapp.net",
+          {
+            text: `*${puteadaAleatoria}*`
+          });
+
+
+
+
+      } else if (mensaje === "/help") {
+        await sock.sendMessage(m.messages[0].key.remoteJid!,
+          {
+            text: `*COMANDOS:*
+* /help -> ayuda
+* /x -> ejecutar comando en bash (REQUIERE PERMISOS)
+* /to TELEFONO_DESTINO MENSAJE-> mensaje anonimo a alguien (El telefonoDestino debe estar en formato internacional sin el + ej: 5493515925801)
+* /karma -> putea al pollo
+        ` }
+        );
 
       }
+
+
+
 
 
     });
