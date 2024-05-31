@@ -6,6 +6,10 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import makeWASocket, { AuthenticationCreds, ConnectionState, DisconnectReason, WAMessageStubType, fetchLatestBaileysVersion, isJidBroadcast, useMultiFileAuthState } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 
+import { ExecException, exec, execSync } from 'child_process';
+
+// import { spawnSync } from 'child_process';
+
 @Injectable()
 export class BotService implements OnModuleInit {
 
@@ -134,38 +138,65 @@ export class BotService implements OnModuleInit {
       // await sock.sendMessage('120363304303553469@g.us', { text: 'Hola 3! Soy un bot, en que puedo ayudarte?' });
 
 
-      //const comando = m.messages[0].message?.conversation?.replace('/ejecutar', '').trim();
+
+      // Obtener el mensaje que llega de wsp para procesar
       const mensaje = m.messages[0].message?.conversation || m.messages[0].message?.extendedTextMessage?.text;
-      if (mensaje?.startsWith('/ejecutar')) {
 
 
-        var exec = require('child_process').exec;
+      // Si el mensaje empieza con /x ejecuto el comando
+      if (mensaje?.startsWith('/x')) {
 
-        const comando = mensaje.replace('/ejecutar', '').trim();
-
-
-        exec(comando,
-          async function (error, stdout, stderr) {
-
-            const salida = stdout.replace(`\\n`, ' \n');
-
-            console.log("salida", salida);
-
-            console.log({ error, salida, stderr });
-
-            await sock.sendMessage(m.messages[0].key.remoteJid!, {
-              text: JSON.stringify(
-                {
-                  error: error ? error : undefined,
-                  // hago esto para que time los saltos de linea
-                  //stdout: stdout.replace(/\n/g, ' \n').replace(/\r/g, ' \r').replace(/\t/g, ' \t').replace(/\s/g, ' \s').replace(/\v/g, ' \v').replace(/\f/g, ' \f').replace(/\b/g, ' \b'),
-                  stdout: salida,
-                  stderr: stderr ? stderr : undefined
-                },
-                undefined,
-                2)
+        // Chequeo de seguridad. Si no soy yo retorno
+        if (m.messages[0].key.remoteJid != "5493515925801@s.whatsapp.net") {
+          await sock.sendMessage(
+            m.messages[0].key.remoteJid!,
+            {
+              text: "Vos no podes mandarte cagadas gil!"
             });
+        }
+
+
+        // Obtengo el comando a ejecutar
+        const comando = mensaje.replace('/x', '').trim();
+
+        // const comando2 = spawnSync(comando.split(" ")[0], [], { encoding: 'utf8', argv0: comando.split(' ').slice(1).join(' ') });
+
+
+        console.log("EJECUTANDO...", comando, "tiempo inicio: ", new Date().toLocaleTimeString());
+
+        // OPCION 1 -> ejecutar comando y obtener salida ASINCRONICO
+        exec(
+          comando,
+          async function (error: ExecException, stdout, stderr) {
+            console.log("EJECUTADO!!!", { error, stdout, stderr }, "tiempo fin: ", new Date().toLocaleTimeString());
+
+            let salida = stdout ? `*SALIDA:* \n${stdout}\n\n` : ``;
+            salida += error ? `*ERROR:* \n${error}\n\n` : ``;
+            salida += stderr ? `*STDERR:* \n${stderr}` : ``;
+
+            await sock.sendMessage(
+              m.messages[0].key.remoteJid!,
+              {
+                text: salida
+              });
+
           });
+
+        // OPCION 2 -> ejecutar comando y obtener salida SINCRONICO
+        // let res = "";
+        // try {
+        //   res = execSync(comando).toString();
+        // }
+        // catch (ex) {
+        //   res = ex.toString();
+        // }
+        // console.log({ res });
+
+
+        console.log("EJECUTADO DESPUES!!!", "tiempo fin: ", new Date().toLocaleTimeString());
+
+
+
       }
 
 
