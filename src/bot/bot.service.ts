@@ -160,10 +160,14 @@ export class BotService implements OnModuleInit {
       // Obtener el mensaje que llega de wsp para procesar
       const mensaje = m.messages[0].message?.conversation || m.messages[0].message?.extendedTextMessage?.text;
 
-      if (mensaje) await this.sock.sendMessage(m.messages[0].key.remoteJid!, { text: `*Mensaje llegado al bot:* ${mensaje}` });
+      // Si no hay mensaje retorno
+      if (!mensaje) return;
+
+      // reenvio el mensaje que llega al remitente
+      // await this.sock.sendMessage(m.messages[0].key.remoteJid!, { text: `*Mensaje llegado al bot:* ${mensaje}` });
 
 
-
+      //-x--------------------------------------------------------------------------------------------------------------------------
       if (mensaje?.startsWith('/x')) {
         // Si el mensaje empieza con /x ejecuto el comando en bash
 
@@ -218,6 +222,7 @@ export class BotService implements OnModuleInit {
 
         console.log("EJECUTADO DESPUES!!!", "tiempo fin: ", new Date().toLocaleTimeString());
 
+        //-to--------------------------------------------------------------------------------------------------------------------------
       } else if (mensaje?.startsWith('/to')) {
         // Mensaje anonimo a alguien
         let [comando, destinatario, ...rest] = mensaje.split(' ');
@@ -236,6 +241,7 @@ export class BotService implements OnModuleInit {
           });
 
 
+        //-karma--------------------------------------------------------------------------------------------------------------------------
       } if (mensaje === '/karma') {
         const listasDePuteadas = [
           "Pollo puto",
@@ -255,7 +261,7 @@ export class BotService implements OnModuleInit {
           });
 
 
-
+        //-dolar--------------------------------------------------------------------------------------------------------------------------
       } else if (mensaje === "/dolar") {
         const { fecha, compra, venta, checkedOnce } = this.dolarService.getEstadoDolar();
 
@@ -277,7 +283,14 @@ export class BotService implements OnModuleInit {
 
 
       }
+      //-jaula--------------------------------------------------------------------------------------------------------------------------
+      else if (mensaje.startsWith("/jaula")) {
+        await this.sock.sendMessage(m.messages[0].key.remoteJid!, { "Como te gusta el puterio ehh???   Ya lo vamos a implementar :)" });
 
+        return;
+      }
+
+      //-help--------------------------------------------------------------------------------------------------------------------------
       else if (mensaje === "/help") {
         await this.sock.sendMessage(m.messages[0].key.remoteJid!,
           {
@@ -295,6 +308,10 @@ ej: /to joa Sos muy groso
 
 
 * /karma -> putea al pollo
+
+* /dolar -> devuelve el valor del ultimo chequeo del dolar en cordoba 
+
+* /jaula MENSAJE -> mensaje al grupo jaula de las locas (TODAVIA NO IMPLEMENTADO)
 
         ` }
         );
