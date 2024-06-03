@@ -1,6 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { CreateBotDto } from './dto/create-bot.dto';
-import { UpdateBotDto } from './dto/update-bot.dto';
+import { SendMessageDto } from './dto/send-message.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import makeWASocket, { AuthenticationCreds, ConnectionState, DisconnectReason, WAMessageStubType, fetchLatestBaileysVersion, isJidBroadcast, useMultiFileAuthState } from '@whiskeysockets/baileys';
@@ -8,19 +7,35 @@ import { Boom } from '@hapi/boom';
 
 import { ExecException, exec, execSync } from 'child_process';
 import { cels } from './data/cels';
+import { DolarService } from 'src/crawler/dolar.service';
 
 // import { spawnSync } from 'child_process';
 
 @Injectable()
 export class BotService implements OnModuleInit {
 
+  private sock;
 
   constructor(
     //! Inyecto el EventEmitter2 para poder usarlo en toda la aplicacion
-    private eventEmitter: EventEmitter2
+    private readonly eventEmitter: EventEmitter2,
+
+    //! Inyecto el servicio de Dolar para poder contestar con el valor actual del dolar ante el mensaje /dolar
+    private readonly dolarService: DolarService
   ) { }
 
-  //! implements the OnModuleInit interface, which has an onModuleInit method that will be called when the module is initialized
+
+
+  sendMessage(sendMessageDto: SendMessageDto) {
+
+    const { to, message } = sendMessageDto;
+
+    this.sock.sendMessage(to, { text: message });
+
+  }
+
+
+  //! Implements the OnModuleInit interface, which has an onModuleInit method that will be called when the module is initialized
   onModuleInit() {
     console.log("INICIANDO Configuracion del Bot");
 
@@ -31,12 +46,8 @@ export class BotService implements OnModuleInit {
   }
 
 
-
-
-
-
   //! Metodo que se encarga de ejecutar la conexion a whatsapp
-  async connectToWhatsApp() {
+  private async connectToWhatsApp() {
 
     // utility function to help save the auth state in a single folder
     // this function serves as a good guide to help write auth & key states for SQL/no-SQL databases, which I would recommend in any production grade system
@@ -48,7 +59,7 @@ export class BotService implements OnModuleInit {
     const { version, isLatest } = await fetchLatestBaileysVersion();
     console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
-    const sock = makeWASocket({
+    this.sock = makeWASocket({
       // can provide additional config here
       // printQRInTerminal: true,
 
@@ -72,7 +83,7 @@ export class BotService implements OnModuleInit {
 
 
     // this will be called as soon as the credentials are updated
-    sock.ev.on('creds.update', async (arg: Partial<AuthenticationCreds>) => {
+    this.sock.ev.on('creds.update', async (arg: Partial<AuthenticationCreds>) => {
       console.log("\n\n\n********************");
       console.log("EVENTO: creds.update ");
 
@@ -80,7 +91,7 @@ export class BotService implements OnModuleInit {
     });
 
 
-    sock.ev.on('connection.update', async (update: Partial<ConnectionState>) => {
+    this.sock.ev.on('connection.update', async (update: Partial<ConnectionState>) => {
       console.log("\n\n\n********************");
       console.log("EVENTO: connection.update ");
       // console.log({ update });
@@ -101,6 +112,7 @@ export class BotService implements OnModuleInit {
         console.log('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
         // reconnect if not logged out
         if (shouldReconnect) {
+          console.log('reconnecting...!!!!!!!!!');
           this.connectToWhatsApp();
         }
 
@@ -112,7 +124,7 @@ export class BotService implements OnModuleInit {
         console.log('online');
 
         const hostname = execSync('hostname').toString();
-        await sock.sendMessage("5493515925801@s.whatsapp.net", { text: `*Bot online en hostname:* ${hostname} ` });
+        await this.sock.sendMessage("5493515925801@s.whatsapp.net", { text: `*Bot online en hostname:* ${hostname} \n${JSON.stringify(update, null, 2)}` });
       }
 
 
@@ -120,7 +132,7 @@ export class BotService implements OnModuleInit {
 
 
 
-    sock.ev.on('messages.upsert', async (m) => {
+    this.sock.ev.on('messages.upsert', async (m) => {
       console.log("\n\n\n********************");
       console.log("EVENTO: messages.upsert ");
 
@@ -130,26 +142,25 @@ export class BotService implements OnModuleInit {
       // chequeo si es creacion de un grupo retorno
       if (m.messages[0].messageStubType === WAMessageStubType.GROUP_CREATE) return;
 
-
       // Imprimo  el mensaje que llega para tener registro
       console.log(JSON.stringify(m, undefined, 2));
 
       //  respondo el mensaje a quien lo envio
-      // await sock.sendMessage(m.messages[0].key.remoteJid!, { text: "Mensaje llegado al bot:" });
+      // await this.sock.sendMessage(m.messages[0].key.remoteJid!, { text: "Mensaje llegado al bot:" });
       // console.log("numero:", m.messages[0].key.remoteJid);
 
       // enviar mensaje al numero 5493515925801@s.whatsapp.net
-      // await sock.sendMessage('5493515925801@s.whatsapp.net', { text: 'Hola 2! Soy un bot, en que puedo ayudarte?' });
+      // await this.sock.sendMessage('5493515925801@s.whatsapp.net', { text: 'Hola 2! Soy un bot, en que puedo ayudarte?' });
 
       // enviar mensaje al grupo Prueba -> 120363304303553469@g.us
-      // await sock.sendMessage('120363304303553469@g.us', { text: 'Hola 3! Soy un bot, en que puedo ayudarte?' });
+      // await this.sock.sendMessage('120363304303553469@g.us', { text: 'Hola 3! Soy un bot, en que puedo ayudarte?' });
 
 
 
       // Obtener el mensaje que llega de wsp para procesar
       const mensaje = m.messages[0].message?.conversation || m.messages[0].message?.extendedTextMessage?.text;
 
-      if (mensaje) await sock.sendMessage(m.messages[0].key.remoteJid!, { text: `*Mensaje llegado al bot:* ${mensaje}` });
+      if (mensaje) await this.sock.sendMessage(m.messages[0].key.remoteJid!, { text: `*Mensaje llegado al bot:* ${mensaje}` });
 
 
 
@@ -158,7 +169,7 @@ export class BotService implements OnModuleInit {
 
         // Chequeo de seguridad. Si no soy yo retorno
         if (m.messages[0].key.remoteJid != "5493515925801@s.whatsapp.net") {
-          await sock.sendMessage(
+          await this.sock.sendMessage(
             m.messages[0].key.remoteJid!,
             {
               text: "*_ACCESO DENEGADO: Vos no podes mandarte cagadas GIL!_*"
@@ -186,7 +197,7 @@ export class BotService implements OnModuleInit {
             salida += error ? `*ERROR:* \n${error}\n\n` : ``;
             salida += stderr ? `*STDERR:* \n${stderr}` : ``;
 
-            await sock.sendMessage(
+            await this.sock.sendMessage(
               m.messages[0].key.remoteJid!,
               {
                 text: salida
@@ -218,7 +229,7 @@ export class BotService implements OnModuleInit {
           destinatario += "@s.whatsapp.net";
         }
 
-        await sock.sendMessage(
+        await this.sock.sendMessage(
           destinatario,
           {
             text: `*Mensaje ANONIMO para ti:* \n${mensajeDestino}`
@@ -238,15 +249,37 @@ export class BotService implements OnModuleInit {
           "Panchito puchero"
         ];
         const puteadaAleatoria = listasDePuteadas[Math.floor(Math.random() * listasDePuteadas.length)];
-        await sock.sendMessage(cels.ale,
+        await this.sock.sendMessage(cels.ale,
           {
             text: `*${puteadaAleatoria}*`
           });
 
 
 
-      } else if (mensaje === "/help") {
-        await sock.sendMessage(m.messages[0].key.remoteJid!,
+      } else if (mensaje === "/dolar") {
+        const { fecha, compra, venta, checkedOnce } = this.dolarService.getEstadoDolar();
+
+        let text;
+
+        if (checkedOnce) {
+          text = `*DOLAR:* \n${fecha.toLocaleTimeString()}\nCompra: ${compra}\nVenta: ${venta}`;
+        } else {
+          text = `*DOLAR:* \nNo se ha chequeado el dolar aun.`;
+        }
+
+
+        await this.sock.sendMessage(m.messages[0].key.remoteJid!, { text });
+
+        return;
+
+
+
+
+
+      }
+
+      else if (mensaje === "/help") {
+        await this.sock.sendMessage(m.messages[0].key.remoteJid!,
           {
             text: `*COMANDOS:*
 
