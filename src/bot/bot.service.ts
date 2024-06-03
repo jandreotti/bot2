@@ -164,7 +164,7 @@ export class BotService implements OnModuleInit {
       if (!mensaje) return;
 
       // reenvio el mensaje que llega al remitente
-      // await this.sock.sendMessage(m.messages[0].key.remoteJid!, { text: `*Mensaje llegado al bot:* ${mensaje}` });
+      await this.sock.sendMessage(m.messages[0].key.remoteJid!, { text: `*Mensaje llegado al bot:* ${mensaje}` });
 
 
       //-x--------------------------------------------------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ export class BotService implements OnModuleInit {
       }
       //-jaula--------------------------------------------------------------------------------------------------------------------------
       else if (mensaje.startsWith("/jaula")) {
-        await this.sock.sendMessage(m.messages[0].key.remoteJid!, { "Como te gusta el puterio ehh???   Ya lo vamos a implementar :)" });
+        await this.sock.sendMessage(m.messages[0].key.remoteJid!, { message: "Como te gusta el puterio ehh???   Ya lo vamos a implementar :)" });
 
         return;
       }
