@@ -56,7 +56,7 @@ export class BotService implements OnModuleInit {
     const { version, isLatest } = await fetchLatestBaileysVersion();
     console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
-    this.sock = await makeWASocket({
+    this.sock = makeWASocket({
 
       // can provide additional config here
       // printQRInTerminal: true,
