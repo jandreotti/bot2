@@ -254,7 +254,7 @@ export class BotService implements OnModuleInit {
         const comandoBash = mensaje.replace('/x', '').trim();
 
         // OPCION 1 -> ejecutar comando y obtener salida ASINCRONICO
-        const self = this;
+        const self = this; //! Necesario para poder acceder a this.sock dentro de la funcion de exec. Si no se hace esto, this.sock no esta definido dentro de la funcion de exec -> https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
         exec(
           comandoBash,
           async function (error: ExecException, stdout, stderr) {
@@ -433,19 +433,19 @@ export class BotService implements OnModuleInit {
 
 * /to TELEFONO_DESTINO MENSAJE-> mensaje anonimo a alguien. 
 El TELEFONO_DESTINO debe estar en formato internacional sin el +
-Aliases: ale, charly, rober, pumba, joa
+Aliases: ale, charly, rober, pumba, joa, fer
 ej: /to 5493515925801 Sos muy groso
 ej: /to joa Sos muy groso
 
 
 * /karma -> putea al pollo (Si esta en el grupo jaula putea en el grupo jaula, sino en privado al pollo)
 
-* /dolar -> devuelve el valor del ultimo chequeo del dolar en cordoba 
+* /dolar -> devuelve el valor del ultimo chequeo del dolar en cordoba.
 
-* /jaula MENSAJE -> mensaje al grupo jaula de las locas (TODAVIA NO IMPLEMENTADO)
+* /jaula MENSAJE -> mensaje al grupo jaula de las locas.
 
 
-NOTA: Se le puede agregar comando a las fotos/videos/gifs/documentos :)
+NOTA: Se le puede agregar comando a las fotos/videos/gifs/documentos en la seccion inferior. ej: seleccionar una foto para mandar y en la parte inferior de comentarios poner /jaula para mandarla al grupo jaula
         ` }
         );
       }
