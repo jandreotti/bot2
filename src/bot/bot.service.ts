@@ -19,6 +19,7 @@ export class BotService implements OnModuleInit {
   private sock: ReturnType<typeof makeWASocket>;
 
 
+
   //- CONSTRUCTOR --------------------------------------------------------------------------------------------------------------------------
   constructor(
     //! Inyecto el EventEmitter2 para poder usarlo en toda la aplicacion
@@ -253,6 +254,7 @@ export class BotService implements OnModuleInit {
         const comandoBash = mensaje.replace('/x', '').trim();
 
         // OPCION 1 -> ejecutar comando y obtener salida ASINCRONICO
+        const self = this;
         exec(
           comandoBash,
           async function (error: ExecException, stdout, stderr) {
@@ -262,7 +264,8 @@ export class BotService implements OnModuleInit {
             salida += error ? `*ERROR:* \n${error}\n\n` : ``;
             salida += stderr ? `*STDERR:* \n${stderr}` : ``;
 
-            await this.sock.sendMessage(
+
+            await self.sock.sendMessage(
               message.key.remoteJid!,
               {
                 text: salida
