@@ -27,7 +27,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.2",
     "baileys": "^6.7.18",
-    "mime-types": "^2.1.35",
+    "mime-types": "^2.1.35", 
     "qr-image": "^3.2.0",
     "qrcode": "^1.5.3",
     "reflect-metadata": "^0.2.0",
