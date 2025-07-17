@@ -3,7 +3,7 @@ import makeWASocket, {
   AnyMessageContent,
   downloadMediaMessage,
   proto,
-} from '@whiskeysockets/baileys';
+} from 'baileys';
 
 import { mkdir, writeFile } from 'fs/promises';
 import * as fs from 'node:fs/promises';

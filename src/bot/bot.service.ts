@@ -14,7 +14,7 @@ import makeWASocket, {
   isJidBroadcast,
   proto,
   useMultiFileAuthState,
-} from '@whiskeysockets/baileys';
+} from 'baileys';
 import { Boom } from '@hapi/boom';
 
 import { ExecException, exec, execSync } from 'child_process';
