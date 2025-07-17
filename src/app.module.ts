@@ -35,10 +35,8 @@ import { CrawlerModule } from './crawler/crawler.module';
     //     },
     //   },
     // }),
-
-
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

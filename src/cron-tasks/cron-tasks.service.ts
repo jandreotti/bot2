@@ -5,16 +5,11 @@ import { BotService } from 'src/bot/bot.service';
 import { cels } from 'src/bot/data/cels';
 import { DolarService } from 'src/crawler/dolar.service';
 
-
-
 // const EVERY_SECOND = '* * * * * *';
 // const EVERY_MINUTE = '* * * * *';
 
-
-
 @Injectable()
 export class CronTasksService {
-
   constructor(
     //! Inyecto el EventEmitter2 para poder usarlo
     private eventEmitter: EventEmitter2,
@@ -23,10 +18,8 @@ export class CronTasksService {
     private readonly dolarService: DolarService,
 
     //! Inyecto el servicio de Bot para poder usarlo
-    private readonly botService: BotService
-  ) { }
-
-
+    private readonly botService: BotService,
+  ) {}
 
   // * * * * * *
   // | | | | | |
@@ -52,9 +45,17 @@ export class CronTasksService {
     // const { fecha, compra, venta } = this.dolarService.getEstadoDolar();
     // console.log(`Hora!!!: ${fecha.toLocaleTimeString()}`, { compra, venta });
 
-
     const res = await this.dolarService.checkearDolarFetch();
-    const { fecha, compra, venta, change, error, fechaLastChange, compraLastChange, ventaLastChange } = res;
+    const {
+      fecha,
+      compra,
+      venta,
+      change,
+      error,
+      fechaLastChange,
+      compraLastChange,
+      ventaLastChange,
+    } = res;
 
     console.log({ res });
 
@@ -66,12 +67,12 @@ export class CronTasksService {
 Compra: $${compra} (${diferenciaCompra > 0 ? '+' : ''}${diferenciaCompra})
 Venta:     *$${venta} (${diferenciaVenta > 0 ? '+' : ''}${diferenciaVenta})*`;
 
-
-
     if (change) this.botService.sendMessage({ to: cels.joa, message: text });
 
-    if (error) this.botService.sendMessage({ to: cels.joa, message: `*ERROR!!!!!${fecha.toLocaleTimeString()}*\nCompra: ${compra}\nVenta: ${venta}` });
-
+    if (error)
+      this.botService.sendMessage({
+        to: cels.joa,
+        message: `*ERROR!!!!!${fecha.toLocaleTimeString()}*\nCompra: ${compra}\nVenta: ${venta}`,
+      });
   }
-
 }

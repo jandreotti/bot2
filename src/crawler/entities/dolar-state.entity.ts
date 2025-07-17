@@ -1,5 +1,4 @@
 export class DolarState {
-
   fecha?: Date;
   compra?: number;
   venta?: number;

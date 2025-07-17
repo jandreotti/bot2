@@ -6,17 +6,14 @@ import { Response } from 'express';
 //! NUEVA LIBRERA
 import * as QRCode from 'qrcode';
 
-
 //! Viejo del primer proyecto
 // import { imageSync } from 'qr-image';
 
-
 @Controller('bot')
 export class BotController {
-
   private qrCode: string;
 
-  constructor(private readonly botService: BotService) { }
+  constructor(private readonly botService: BotService) {}
 
   //! Metodo que se encarga de guardar el QR Code cuando se recibe el evento 'qrcode.created' por el EventEmitter
   @OnEvent('connection.qr')
@@ -31,11 +28,9 @@ export class BotController {
       return response.status(404).send('QR Code not found');
     }
 
-
     //! Forma nueva
     response.setHeader('Content-Type', 'image/png');
     QRCode.toFileStream(response, this.qrCode);
-
 
     //! Forma vieja del proyecto anterior de devolver el codigo qr
     // if (this.qrCode) {
@@ -50,7 +45,6 @@ export class BotController {
     //   			${svg_string}
     //   		</div>
     //   	`;
-
 
     //   html = `
     //   	<html>
@@ -68,13 +62,5 @@ export class BotController {
     //   `;
     //   response.status(200).send(html);
     // }
-
-
-
-
   }
-
-
-
-
 }

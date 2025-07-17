@@ -5,12 +5,11 @@ import { CrawlerModule } from 'src/crawler/crawler.module';
 
 @Module({
   imports: [
-
     //! Importo el modulo de Crawler para poder usar el servicio de DolarService
-    CrawlerModule
+    CrawlerModule,
   ],
   controllers: [BotController],
   providers: [BotService],
-  exports: [BotService]
+  exports: [BotService],
 })
-export class BotModule { }
+export class BotModule {}
