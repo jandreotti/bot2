@@ -29,7 +29,6 @@ export class BotService implements OnModuleInit {
     private readonly dolarService: DolarService
   ) { }
 
-
   //- METODOS --------------------------------------------------------------------------------------------------------------------------
   //! Implements the OnModuleInit interface, which has an onModuleInit method that will be called when the module is initialized
   async onModuleInit() {
